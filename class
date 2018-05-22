@@ -1,25 +1,24 @@
 class gCodeGenerator():
-  x
-  y
-  z
-  duration
-  timestep
-  t = symbols('t')
   
-  def __init__(fx,fy,fz,d,ts):
-    x = fx
-    y = fy
-    z = fz
-    duration = d
-    timestep = ts
+  def __init__(self,fx,fy,fz,dur,ts):
+    self.x = fx
+    self.y = fy
+    self.z = fz
+    self.d = dur
+    self.t = ts
     
-  def changeTimestep(ts):
-    t = ts
+  def changeTimestep(self,ts):
+    self.t = ts
   
   def offset(off):
-    x += off
-    y += off
-    z += off
+    self.x += off
+    self.y += off
+    self.z += off
   
+  def scale(s):
+    self.x *= s
+    self.y *= s
+    self.z *= s
+    
   def setZero:
     return "G92"
