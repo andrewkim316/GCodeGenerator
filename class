@@ -2,8 +2,9 @@ import sympy
 from sympy import symbols
 t = symbols('t')
 
-class gCodeGenerator():
+class gCodeGen():
     def __init__(self,fx,fy,fz,dur,ts):
+        # Initializes a "gCodeGen" object with 5 variables: 3 input trajectories with reliance on time, a duration, and a timestep
         self.x = fx
         self.y = fy
         self.z = fz
@@ -11,22 +12,27 @@ class gCodeGenerator():
         self.time = ts
     
     def changeTimestep(self,ts):
+        # Changes the timestep to the input parameter ts
         self.time = ts
   
     def offset(self,off):
+        # Offsets the trajectories by a certain factor
         self.x += off
         self.y += off
         self.z += off
   
     def scale(self,s):
+        # Scales the trajectories by a certain factor
         self.x *= s
         self.y *= s
         self.z *= s
     
     def setZero(self):
+        # Sets the current position to X0 Y0 Z0
         return "N1 G92"
     
     def check(self):
+        # Checks whether or not the code will be out of bounds
         rx = 550
         ry = 550
         rz = 150
@@ -44,6 +50,7 @@ class gCodeGenerator():
         return True
     
     def generator(self):
+        # Generates G-Code based off the 3 input trajectories, the given timestep, and the given duration
         out = ""
         runningTime = self.time
         out+= "N1 G21\n"
@@ -56,14 +63,20 @@ class gCodeGenerator():
         return out
     
     def origin(self):
+        # Returns to the origin point
         return "N1 X0 Y0 Z0"
 
-xc = gCodeGenerator(6*t+82.550,5*t+105.410,0*t+31.496,40,0.1)
+    def execute(self,file):
+        # Checks whether the code is runnable.  If it is, the G-Code is written to the specified file name parameter.
+        if(self.check()):
+            file = open(file,"w")
+            file.write(self.generator())
+            file.close()
+            print("Yer code be written!")
+        else:
+            print("Ye fool!  Yer code be out o' bounds!")
+
+# Tests the functions
+xc = gCodeGen(6*t+82.550,5*t+105.410,0*t+31.496,40,0.1)
 xc.scale(1)
-if(xc.check()):
-    file = open("TextFile1.txt","w")
-    file.write(xc.generator())
-    file.close()
-    print("Yer code be written!")
-else:
-    print("Ye fool!  Yer code be out o' bounds!")
+xc.execute("TextFile1")
