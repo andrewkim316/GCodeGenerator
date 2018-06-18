@@ -49,11 +49,14 @@ class gCodeGen():
         print ("Code be runnable!")
         return True
     
-    def generator(self):
-        # Generates G-Code based off the 3 input trajectories, the given timestep, and the given duration
+    def generator(self,m):
+        # Generates G-Code based off the 3 input trajectories, the given timestep, and the given duration.  If m is true, the G-code will be in mm.  If false, it will be in inches.
         out = ""
         runningTime = self.time
-        out+= "N1 G21\n"
+        if(m):
+            out+= "N1 G21\n"
+        else:
+            out+= "N1 G22\n"
         for l in range(int(self.d/self.time)):
             newX = str(self.x.subs(t,runningTime))
             newY = str(self.y.subs(t,runningTime))
@@ -75,6 +78,26 @@ class gCodeGen():
             print("Yer code be written!")
         else:
             print("Ye fool!  Yer code be out o' bounds!")
+
+    def inToMm(self):
+        # Scales from inches to millimeters
+        self.x /= 25.4
+        self.y /= 25.4
+        self.z /= 25.4
+
+    def mmToIn(self):
+        # Scales from millimeters to inches
+        self.x *= 25.4
+        self.y *= 25.4
+        self.z *= 25.4
+
+    def scaleToReal(self,m):
+        # Scales a unit trajectory (0 to 1) to the limits of the X-Carve
+        self.x *= 550
+        self.y *= 550
+        self.z *= 150
+        if(not m):
+            self.mmToIn()
 
 # Tests the functions
 xc = gCodeGen(6*t+82.550,5*t+105.410,0*t+31.496,40,0.1)
