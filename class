@@ -1,24 +1,69 @@
+import sympy
+from sympy import symbols
+t = symbols('t')
+
 class gCodeGenerator():
-  
-  def __init__(self,fx,fy,fz,dur,ts):
-    self.x = fx
-    self.y = fy
-    self.z = fz
-    self.d = dur
-    self.t = ts
+    def __init__(self,fx,fy,fz,dur,ts):
+        self.x = fx
+        self.y = fy
+        self.z = fz
+        self.d = dur
+        self.time = ts
     
-  def changeTimestep(self,ts):
-    self.t = ts
+    def changeTimestep(self,ts):
+        self.time = ts
   
-  def offset(off):
-    self.x += off
-    self.y += off
-    self.z += off
+    def offset(self,off):
+        self.x += off
+        self.y += off
+        self.z += off
   
-  def scale(s):
-    self.x *= s
-    self.y *= s
-    self.z *= s
+    def scale(self,s):
+        self.x *= s
+        self.y *= s
+        self.z *= s
     
-  def setZero:
-    return "G92"
+    def setZero(self):
+        return "N1 G92"
+    
+    def check(self):
+        rx = 550
+        ry = 550
+        rz = 150
+        runningTime = self.time
+        for l in range(int(self.d/self.time)):
+            newX = str(self.x.subs(t,runningTime))
+            newY = str(self.y.subs(t,runningTime))
+            newZ = str(self.z.subs(t,runningTime))
+            runningTime+=self.time
+            if(float(newZ) < 0 or float(newY) < 0 or float(newX) < 0 or float(newZ) > rz or float(newY) > ry or float(newX) > rx):
+                print ("Error! Code be out o' bounds (X" + newX + " Y" + newY + " Z" + newZ + ").")
+                return False
+                break;
+        print ("Code be runnable!")
+        return True
+    
+    def generator(self):
+        out = ""
+        runningTime = self.time
+        out+= "N1 G21\n"
+        for l in range(int(self.d/self.time)):
+            newX = str(self.x.subs(t,runningTime))
+            newY = str(self.y.subs(t,runningTime))
+            newZ = str(self.z.subs(t,runningTime))
+            runningTime+=self.time
+            out+="N"+str(l+2)+" X"+newX+" Y"+newY+" Z"+newZ+"\n"
+        return out
+    
+    def origin(self):
+        return "N1 X0 Y0 Z0"
+
+xc = gCodeGenerator(6*t+82.550,5*t+105.410,0*t+31.496,40,0.1)
+xc.scale(1)
+if(xc.check()):
+    file = open("TextFile1.txt","w")
+    file.write(xc.generator())
+    file.close()
+    print("Yer code be written!")
+else:
+    print("Ye fool!  Yer code be out o' bounds!")
